@@ -1,10 +1,190 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>My Website</title>
-  </head>
-  <body>
-    <h1>Welcome to my site!</h1>
-    <p>Hosted for free on GitHub Pages.</p>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Feed</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 650px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent);
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Post Creation Box */
+    .create-post {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input, textarea, select, button {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    button {
+      background: var(--accent);
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    /* Post Card Display */
+    .feed {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .post-header {
+      padding: 14px 16px 8px;
+    }
+
+    .post-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 0 0 4px 0;
+    }
+
+    .post-caption {
+      color: var(--text-dim);
+      margin: 0;
+      font-size: 14px;
+      white-space: pre-line;
+    }
+
+    .post-media {
+      width: 100%;
+      margin-top: 10px;
+      background: #000;
+      display: block;
+    }
+
+    img.post-media {
+      max-height: 500px;
+      object-fit: contain;
+    }
+
+    iframe.post-media {
+      height: 340px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Feed & Posts</h1>
+
+  <!-- Creation Box -->
+  <div class="create-post">
+    <input type="text" id="postTitle" placeholder="Post Title...">
+    <textarea id="postCaption" placeholder="Write text or a caption..."></textarea>
+    
+    <select id="mediaType">
+      <option value="image">Image URL</option>
+      <option value="video">Direct Video URL (.mp4)</option>
+      <option value="youtube">YouTube Embed URL</option>
+    </select>
+    
+    <input type="text" id="mediaUrl" placeholder="Media URL (optional)...">
+    <button onclick="addPost()">Post</button>
+  </div>
+
+  <!-- Feed Display -->
+  <div class="feed" id="feedContainer"></div>
+
+  <script>
+    function addPost() {
+      const title = document.getElementById('postTitle').value;
+      const caption = document.getElementById('postCaption').value;
+      const mediaType = document.getElementById('mediaType').value;
+      const mediaUrl = document.getElementById('mediaUrl').value;
+
+      if (!title && !caption && !mediaUrl) {
+        alert("Please add some text or media before posting!");
+        return;
+      }
+
+      const feed = document.getElementById('feedContainer');
+      const card = document.createElement('div');
+      card.className = 'post-card';
+
+      let mediaHtml = '';
+      if (mediaUrl) {
+        if (mediaType === 'image') {
+          mediaHtml = `<img src="${mediaUrl}" class="post-media" alt="Post media">`;
+        } else if (mediaType === 'video') {
+          mediaHtml = `<video controls class="post-media"><source src="${mediaUrl}"></video>`;
+        } else if (mediaType === 'youtube') {
+          // Convert regular YouTube watch link to embed link if needed
+          let embedUrl = mediaUrl.replace("watch?v=", "embed/");
+          mediaHtml = `<iframe src="${embedUrl}" class="post-media" allowfullscreen></iframe>`;
+        }
+      }
+
+      card.innerHTML = `
+        <div class="post-header">
+          ${title ? `<h2 class="post-title">${title}</h2>` : ''}
+          ${caption ? `<p class="post-caption">${caption}</p>` : ''}
+        </div>
+        ${mediaHtml}
+      `;
+
+      feed.prepend(card);
+
+      // Clear fields after posting
+      document.getElementById('postTitle').value = '';
+      document.getElementById('postCaption').value = '';
+      document.getElementById('mediaUrl').value = '';
+    }
+  </script>
+
+</body>
 </html>
